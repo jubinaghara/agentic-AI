@@ -1,0 +1,10 @@
+gitignore# Environment variables
+.env
+.env.local
+.env.production
+.env.development
+
+# Azure specific
+azure-credentials.json
+*.key
+*.pem
