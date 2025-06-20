@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Response APIVersion="2105.1" IPS_CAT_VER="1" IS_WIFI6="0">
+    <Login>
+        <status>Authentication Successful</status>
+    </Login>
+    <FirewallRule transactionid="">
+        <Name>Clone_#Default_Network_Policy</Name>
+        <Description>Cloned default policy for LAN to WAN traffic</Description>
+        <IPFamily>IPv4</IPFamily>
+        <Status>Enable</Status>
+        <Position>Top</Position>
+        <PolicyType>Network</PolicyType>
+        <NetworkPolicy>
+            <Action>Accept</Action>
+            <LogTraffic>Disable</LogTraffic>
+            <SkipLocalDestined>Disable</SkipLocalDestined>
+            <SourceZones>
+                <Zone>LAN</Zone>
+            </SourceZones>
+            <DestinationZones>
+                <Zone>WAN</Zone>
+            </DestinationZones>
+            <Schedule>All The Time</Schedule>
+            <DestinationNetworks>
+                <Network>Internet IPv4 group</Network>
+            </DestinationNetworks>
+            <DSCPMarking>-1</DSCPMarking>
+            <WebFilter>None</WebFilter>
+            <WebCategoryBaseQoSPolicy> </WebCategoryBaseQoSPolicy>
+            <BlockQuickQuic>Disable</BlockQuickQuic>
+            <ScanVirus>Disable</ScanVirus>
+            <ZeroDayProtection>Disable</ZeroDayProtection>
+            <ProxyMode>Disable</ProxyMode>
+            <DecryptHTTPS>Disable</DecryptHTTPS>
+            <ApplicationControl>None</ApplicationControl>
+            <ApplicationBaseQoSPolicy> </ApplicationBaseQoSPolicy>
+            <IntrusionPrevention>None</IntrusionPrevention>
+            <TrafficShappingPolicy>None</TrafficShappingPolicy>
+            <ScanSMTP>Disable</ScanSMTP>
+            <ScanSMTPS>Disable</ScanSMTPS>
+            <ScanIMAP>Disable</ScanIMAP>
+            <ScanIMAPS>Disable</ScanIMAPS>
+            <ScanPOP3>Disable</ScanPOP3>
+            <ScanPOP3S>Disable</ScanPOP3S>
+            <ScanFTP>Disable</ScanFTP>
+            <SourceSecurityHeartbeat>Disable</SourceSecurityHeartbeat>
+            <MinimumSourceHBPermitted>No Restriction</MinimumSourceHBPermitted>
+            <DestSecurityHeartbeat>Disable</DestSecurityHeartbeat>
+            <MinimumDestinationHBPermitted>No Restriction</MinimumDestinationHBPermitted>
+        </NetworkPolicy>
+    </FirewallRule>
+    <FirewallRule transactionid="">
+        <Name>#Default_Network_Policy</Name>
+        <Description>Default network policy with security features enabled</Description>
+        <IPFamily>IPv4</IPFamily>
+        <Status>Enable</Status>
+        <Position>After</Position>
+        <PolicyType>Network</PolicyType>
+        <After>
+            <Name>Clone_#Default_Network_Policy</Name>
+        </After>
+        <NetworkPolicy>
+            <Action>Accept</Action>
+            <LogTraffic>Disable</LogTraffic>
+            <SkipLocalDestined>Disable</SkipLocalDestined>
+            <SourceZones>
+                <Zone>LAN</Zone>
+            </SourceZones>
+            <DestinationZones>
+                <Zone>WAN</Zone>
+            </DestinationZones>
+            <Schedule>All The Time</Schedule>
+            <DestinationNetworks>
+                <Network>Internet IPv4 group</Network>
+            </DestinationNetworks>
+            <DSCPMarking>-1</DSCPMarking>
+            <WebFilter>Allow All</WebFilter>
+            <WebCategoryBaseQoSPolicy> </WebCategoryBaseQoSPolicy>
+            <BlockQuickQuic>Disable</BlockQuickQuic>
+            <ScanVirus>Enable</ScanVirus>
+            <ZeroDayProtection>Enable</ZeroDayProtection>
+            <ProxyMode>Disable</ProxyMode>
+            <DecryptHTTPS>Disable</DecryptHTTPS>
+            <ApplicationControl>Allow All</ApplicationControl>
+            <ApplicationBaseQoSPolicy> </ApplicationBaseQoSPolicy>
+            <IntrusionPrevention>generalpolicy</IntrusionPrevention>
+            <TrafficShappingPolicy>None</TrafficShappingPolicy>
+            <ScanSMTP>Disable</ScanSMTP>
+            <ScanSMTPS>Disable</ScanSMTPS>
+            <ScanIMAP>Disable</ScanIMAP>
+            <ScanIMAPS>Disable</ScanIMAPS>
+            <ScanPOP3>Disable</ScanPOP3>
+            <ScanPOP3S>Disable</ScanPOP3S>
+            <ScanFTP>Enable</ScanFTP>
+            <SourceSecurityHeartbeat>Disable</SourceSecurityHeartbeat>
+            <MinimumSourceHBPermitted>No Restriction</MinimumSourceHBPermitted>
+            <DestSecurityHeartbeat>Disable</DestSecurityHeartbeat>
+            <MinimumDestinationHBPermitted>No Restriction</MinimumDestinationHBPermitted>
+        </NetworkPolicy>
+    </FirewallRule>
+    <FirewallRule transactionid="">
+        <Name>DMZ_Access_Rule</Name>
+        <Description>Allow DMZ access to specific services</Description>
+        <IPFamily>IPv4</IPFamily>
+        <Status>Enable</Status>
+        <Position>Top</Position>
+        <PolicyType>Network</PolicyType>
+        <NetworkPolicy>
+            <Action>Accept</Action>
+            <LogTraffic>Enable</LogTraffic>
+            <SkipLocalDestined>Disable</SkipLocalDestined>
+            <SourceZones>
+                <Zone>DMZ</Zone>
+            </SourceZones>
+            <DestinationZones>
+                <Zone>LAN</Zone>
+            </DestinationZones>
+            <Schedule>Business Hours</Schedule>
+            <DestinationNetworks>
+                <Network>Internal Servers</Network>
+            </DestinationNetworks>
+            <DSCPMarking>-1</DSCPMarking>
+            <WebFilter>Strict</WebFilter>
+            <BlockQuickQuic>Enable</BlockQuickQuic>
+            <ScanVirus>Enable</ScanVirus>
+            <ZeroDayProtection>Enable</ZeroDayProtection>
+            <ProxyMode>Enable</ProxyMode>
+            <DecryptHTTPS>Enable</DecryptHTTPS>
+            <ApplicationControl>Strict Policy</ApplicationControl>
+            <IntrusionPrevention>strict_policy</IntrusionPrevention>
+            <TrafficShappingPolicy>High Priority</TrafficShappingPolicy>
+            <ScanSMTP>Enable</ScanSMTP>
+            <ScanSMTPS>Enable</ScanSMTPS>
+            <ScanFTP>Enable</ScanFTP>
+            <SourceSecurityHeartbeat>Enable</SourceSecurityHeartbeat>
+            <MinimumSourceHBPermitted>Green</MinimumSourceHBPermitted>
+            <DestSecurityHeartbeat>Enable</DestSecurityHeartbeat>
+            <MinimumDestinationHBPermitted>Green</MinimumDestinationHBPermitted>
+        </NetworkPolicy>
+    </FirewallRule>
+    <FirewallRule transactionid="">
+        <Name>Guest_Network_Block</Name>
+        <Description>Block guest network from accessing internal resources</Description>
+        <IPFamily>IPv4</IPFamily>
+        <Status>Enable</Status>
+        <Position>Top</Position>
+        <PolicyType>Network</PolicyType>
+        <NetworkPolicy>
+            <Action>Drop</Action>
+            <LogTraffic>Enable</LogTraffic>
+            <SkipLocalDestined>Disable</SkipLocalDestined>
+            <SourceZones>
+                <Zone>GUEST</Zone>
+            </SourceZones>
+            <DestinationZones>
+                <Zone>LAN</Zone>
+                <Zone>DMZ</Zone>
+            </DestinationZones>
+            <Schedule>All The Time</Schedule>
+            <DestinationNetworks>
+                <Network>Internal Networks</Network>
+            </DestinationNetworks>
+            <DSCPMarking>-1</DSCPMarking>
+            <WebFilter>Family Safe</WebFilter>
+            <BlockQuickQuic>Enable</BlockQuickQuic>
+            <ScanVirus>Enable</ScanVirus>
+            <ZeroDayProtection>Enable</ZeroDayProtection>
+            <ProxyMode>Enable</ProxyMode>
+            <DecryptHTTPS>Disable</DecryptHTTPS>
+            <ApplicationControl>Guest Policy</ApplicationControl>
+            <IntrusionPrevention>guest_policy</IntrusionPrevention>
+            <TrafficShappingPolicy>Low Priority</TrafficShappingPolicy>
+        </NetworkPolicy>
+    </FirewallRule>
+     <FirewallRule transactionid="">
+        <Name>Guest_Network_Block</Name>
+        <Description>Block guest network from accessing internal resources</Description>
+        <IPFamily>IPv4</IPFamily>
+        <Status>Enable</Status>
+        <Position>Top</Position>
+        <PolicyType>Network</PolicyType>
+        <NetworkPolicy>
+            <Action>Drop</Action>
+            <LogTraffic>Enable</LogTraffic>
+            <SkipLocalDestined>Disable</SkipLocalDestined>
+            <SourceZones>
+                <Zone>GUEST</Zone>
+            </SourceZones>
+            <DestinationZones>
+                <Zone>LAN</Zone>
+                <Zone>DMZ</Zone>
+            </DestinationZones>
+            <Schedule>All The Time</Schedule>
+            <DestinationNetworks>
+                <Network>10.10.10.1</Network>
+            </DestinationNetworks>
+            <DSCPMarking>-1</DSCPMarking>
+            <WebFilter>Family Safe</WebFilter>
+            <BlockQuickQuic>Enable</BlockQuickQuic>
+            <ScanVirus>Enable</ScanVirus>
+            <ZeroDayProtection>Enable</ZeroDayProtection>
+            <ProxyMode>Enable</ProxyMode>
+            <DecryptHTTPS>Disable</DecryptHTTPS>
+            <ApplicationControl>Guest Policy</ApplicationControl>
+            <IntrusionPrevention>guest_policy</IntrusionPrevention>
+            <TrafficShappingPolicy>Low Priority</TrafficShappingPolicy>
+        </NetworkPolicy>
+    </FirewallRule>
+     <FirewallRule transactionid="">
+        <Name>Guest_Network_Block</Name>
+        <Description>Block guest network from accessing internal resources</Description>
+        <IPFamily>IPv4</IPFamily>
+        <Status>Enable</Status>
+        <Position>Top</Position>
+        <PolicyType>Network</PolicyType>
+        <NetworkPolicy>
+            <Action>Drop</Action>
+            <LogTraffic>Enable</LogTraffic>
+            <SkipLocalDestined>Disable</SkipLocalDestined>
+            <SourceZones>
+                <Zone>GUEST</Zone>
+            </SourceZones>
+            <DestinationZones>
+                <Zone>LAN</Zone>
+                <Zone>DMZ</Zone>
+            </DestinationZones>
+            <Schedule>All The Time</Schedule>
+            <DestinationNetworks>
+                <Network>192.168.2.100</Network>
+            </DestinationNetworks>
+            <DSCPMarking>-1</DSCPMarking>
+            <WebFilter>Family Safe</WebFilter>
+            <BlockQuickQuic>Enable</BlockQuickQuic>
+            <ScanVirus>Enable</ScanVirus>
+            <ZeroDayProtection>Enable</ZeroDayProtection>
+            <ProxyMode>Enable</ProxyMode>
+            <DecryptHTTPS>Disable</DecryptHTTPS>
+            <ApplicationControl>Guest Policy</ApplicationControl>
+            <IntrusionPrevention>guest_policy</IntrusionPrevention>
+            <TrafficShappingPolicy>Low Priority</TrafficShappingPolicy>
+        </NetworkPolicy>
+    </FirewallRule>
+</Response>
