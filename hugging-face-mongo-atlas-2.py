@@ -7,8 +7,12 @@ from huggingface_hub import login
 # Load environment variables from .env file
 load_dotenv()
 
-# MongoDB setup
-client = pymongo.MongoClient(os.getenv("MONGO_DB_URL"))
+# MongoDB setup with SSL fix
+client = pymongo.MongoClient(
+    os.getenv("MONGO_DB_URL"),
+    tls=True,
+    tlsInsecure=True
+)
 db = client.sample_mflix
 collection = db.movies
 
@@ -25,9 +29,18 @@ model = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
 def generate_embedding(text: str) -> list[float]:
     print("Generating embedding for:", text)
     embedding = model.encode(text)
-    return embedding.tolist()
+    return embedding.tolist()  # Fix: changed from .json() to .tolist()
 
-# Example usage
-print(generate_embedding("Hello word is good a world"))
 
-#This print function will generate the floating point numbers for above string using the hugging face model.
+# This code will see if the plot exist and generate the embedding for the plot.
+# The exisitng collection of movies is updates and one new field called "plot_embedding_hf" is added to that plot
+# This operation is limited to 50.
+for doc in collection.find({'plot':{"$exists": True}}).limit(50):
+   doc['plot_embedding_hf'] = generate_embedding(doc['plot'])
+   collection.replace_one({'_id': doc['_id']}, doc)
+
+
+
+# NEXT
+# Go to mongodB -> Atlas Search  -> Create Index 
+# 
