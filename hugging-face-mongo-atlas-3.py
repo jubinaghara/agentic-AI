@@ -39,7 +39,6 @@ def generate_embedding(text: str) -> list[float]:
 #    doc['plot_embedding_hf'] = generate_embedding(doc['plot'])
 #    collection.replace_one({'_id': doc['_id']}, doc)
 
-
 query = "bavarian widow characters from outer space at war"
 
 results = collection.aggregate([
