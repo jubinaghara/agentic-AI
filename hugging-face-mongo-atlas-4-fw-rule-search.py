@@ -1,3 +1,9 @@
+# Current code uses semantic (vector-based) search for firewall rules, which is excellent for 
+# natural language queries but can be imprecise for structured fields like source_zones. 
+# When you search for "source zone as LAN," the embedding model may also retrieve rules mentioning
+# WAN (or both), because the semantic similarity between "LAN" and "WAN" is high in vector space. 
+# This is why you see results with source zone as WAN when searching for LAN.
+
 import os
 import json
 import xml.etree.ElementTree as ET
