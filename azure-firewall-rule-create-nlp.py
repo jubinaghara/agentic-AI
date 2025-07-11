@@ -73,7 +73,14 @@ class AzureOpenAIConfig:
                 "AZURE_OPENAI_DEPLOYMENT_NAME in your .env file"
             )
         
+        # Validate endpoint format
+        if not self.endpoint.startswith(('https://', 'http://')):
+            raise ValueError(f"Invalid endpoint format: {self.endpoint}. Must start with https:// or http://")
+        
         logger.info("✅ Azure OpenAI configuration validated")
+        logger.info(f"📋 Endpoint: {self.endpoint}")
+        logger.info(f"📋 Deployment: {self.deployment_name}")
+        logger.info(f"📋 API Version: {self.api_version}")
 
 # --- API Connection Settings ---
 class FirewallAPIConfig:
@@ -201,15 +208,25 @@ class FirewallCopilot:
         # Initialize Azure OpenAI configuration
         self.azure_config = azure_config or AzureOpenAIConfig()
         
-        # Initialize Azure OpenAI LLM
-        self.llm = AzureChatOpenAI(
-            azure_endpoint=self.azure_config.endpoint,
-            api_key=self.azure_config.api_key,
-            api_version=self.azure_config.api_version,
-            azure_deployment=self.azure_config.deployment_name,
-            temperature=0.1,
-            max_tokens=1500
-        )
+        # Initialize Azure OpenAI LLM with better error handling
+        try:
+            self.llm = AzureChatOpenAI(
+                azure_endpoint=self.azure_config.endpoint,
+                api_key=self.azure_config.api_key,
+                api_version=self.azure_config.api_version,
+                azure_deployment=self.azure_config.deployment_name,
+                temperature=0.1,
+                max_tokens=1500,
+                timeout=30,  # 30 second timeout
+                max_retries=2  # Limit retries
+            )
+            
+            # Test the connection
+            self._test_connection()
+            
+        except Exception as e:
+            logger.error(f"❌ Failed to initialize Azure OpenAI: {e}")
+            raise ValueError(f"Azure OpenAI initialization failed: {e}")
         
         # Initialize parser, chain, and other components
         self.parser = JsonOutputParser(pydantic_object=FirewallPolicy)
@@ -218,6 +235,28 @@ class FirewallCopilot:
         self.api_client = FirewallAPIClient(api_config or FirewallAPIConfig())
         
         logger.info(f"✅ Firewall Copilot ready (Azure OpenAI: {self.azure_config.deployment_name})")
+
+    def _test_connection(self):
+        """Test Azure OpenAI connection with a simple query"""
+        try:
+            logger.info("🔄 Testing Azure OpenAI connection...")
+            test_messages = [
+                {"role": "system", "content": "You are a helpful assistant."},
+                {"role": "user", "content": "Hello"}
+            ]
+            
+            # Use the raw client for testing
+            from langchain_core.messages import HumanMessage, SystemMessage
+            test_response = self.llm.invoke([
+                SystemMessage(content="You are a helpful assistant."),
+                HumanMessage(content="Hello")
+            ])
+            
+            logger.info("✅ Azure OpenAI connection successful")
+            
+        except Exception as e:
+            logger.error(f"❌ Azure OpenAI connection test failed: {e}")
+            raise ConnectionError(f"Cannot connect to Azure OpenAI: {e}")
 
     def _create_chain(self):
         # Build the AI prompt chain for extracting policy data
@@ -288,7 +327,47 @@ Now extract policy from this input: "{user_input}" """)
         try:
             # Step 1: Extract structured policy from input using Azure OpenAI
             logger.info("🔄 Extracting policy data with Azure OpenAI...")
-            policy_data = self.chain.invoke({"user_input": user_input})
+            
+            try:
+                policy_data = self.chain.invoke({"user_input": user_input})
+                logger.info("✅ Policy extraction successful")
+                
+            except Exception as llm_error:
+                logger.error(f"❌ LLM processing failed: {llm_error}")
+                # Check if it's a connection issue
+                if "Connection error" in str(llm_error) or "timeout" in str(llm_error).lower():
+                    error_msg = (
+                        "Connection to Azure OpenAI failed. Please check:\n"
+                        "1. Your internet connection\n"
+                        "2. Azure OpenAI endpoint URL is correct\n"
+                        "3. API key is valid\n"
+                        "4. Deployment name exists\n"
+                        "5. Azure OpenAI service is running"
+                    )
+                elif "authentication" in str(llm_error).lower() or "unauthorized" in str(llm_error).lower():
+                    error_msg = (
+                        "Authentication failed. Please check:\n"
+                        "1. API key is correct\n"
+                        "2. API key has proper permissions\n"
+                        "3. Deployment name is correct"
+                    )
+                elif "not found" in str(llm_error).lower():
+                    error_msg = (
+                        "Resource not found. Please check:\n"
+                        "1. Deployment name is correct\n"
+                        "2. Endpoint URL is correct\n"
+                        "3. API version is supported"
+                    )
+                else:
+                    error_msg = f"Azure OpenAI error: {llm_error}"
+                
+                return {
+                    "error": str(llm_error),
+                    "original_input": user_input,
+                    "created_successfully": False,
+                    "response_message": error_msg,
+                    "timestamp": datetime.now().isoformat()
+                }
 
             # Step 2: Generate unique policy name
             policy_name = f"policy_{uuid.uuid4().hex[:8]}"
