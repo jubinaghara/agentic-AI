@@ -1,5 +1,5 @@
 """
-Firewall Copilot: Natural Language to Firewall Policy Automation
+Firewall Copilot: Natural Language to Firewall Policy.
 Author: Jubin Aghara
 Date: Jul-11-2025
 Updated: Azure OpenAI Integration
@@ -9,6 +9,25 @@ Features:
 - Extracts structured policy data using LLM (LangChain + Azure OpenAI)
 - Generates XML config for firewall
 - Supports two modes: test (dry run) and real (deploy via API)
+
+======================================================================
+
+Technique: Few-Shot Prompt Engineering:
+✅ Best when:
+- You want results now
+- Don’t want to manage infrastructure or datasets
+- Using GPT-4, GPT-3.5 or similar via API
+
+🔧 Benefits:
+- High flexibility with low engineering cost
+- Easy to update: just add examples
+- Post-processing rules add reliability (e.g., normalize ports, validate zones)
+
+🔻 Trade-offs:
+- Less consistent for edge cases
+- Requires ongoing prompt tuning as input variety increases
+
+======================================================================
 """
 
 import os
@@ -314,7 +333,13 @@ Output: {{"action": "allow", "source_zone": "LAN", "destination_zone": "WAN", "s
 
 Input: "deny all traffic from dmz to lan on port 22"
 Output: {{"action": "deny", "source_zone": "DMZ", "destination_zone": "LAN", "service": "SSH", "port": "22", "protocol": "tcp"}}
-
+  
+Input: "deny access frm 1.2.3.4/32 to dst ntwk 10.10.10.0/24. Source Zone LAN Dst Zone WAN. Service HTTPS."
+Output: {{"action": "deny", "source_zone": "LAN", "destination_zone": "WAN", "service": "HTTPS", "port": "443", "protocol": "TCP", "source_network": "1.2.3.4/32", "destination_network": "10.10.10.0/24"}}
+         
+Input: "allow access frm 1.2.3.4/32 to dst ntwk 10.10.10.0/24. Source Zone LAN Dst Zone WAN. Service HTTPS."
+Output: {{"action": "allow", "source_zone": "LAN", "destination_zone": "WAN", "service": "HTTPS", "port": "443", "protocol": "TCP", "source_network": "1.2.3.4/32", "destination_network": "10.10.10.0/24"}}
+         
 Now extract policy from this input: "{user_input}" """)
         ])
         return prompt.partial(format_instructions=self.parser.get_format_instructions()) | self.llm | self.parser
